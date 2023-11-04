@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useReducer, useRef } from "react";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import Link from "next/link";
-import 'chart.js/auto';
-import { Bar } from "react-chartjs-2";
-import { Store } from "../../helpers/Store";
-import { useRouter } from "next/router";
-import { getError } from "../../helpers/error";
-import { ToastContainer, toast } from "react-toastify";
+import React, { useContext, useEffect, useReducer, useRef } from 'react'
+import dynamic from 'next/dynamic'
+import Head from 'next/head'
+import Link from 'next/link'
+import 'chart.js/auto'
+import { Bar } from 'react-chartjs-2'
+import { Store } from '../../helpers/Store'
+import { useRouter } from 'next/router'
+import { getError } from '../../helpers/error'
+import { ToastContainer, toast } from 'react-toastify'
 import {
   Container,
   Row,
@@ -15,59 +15,76 @@ import {
   ListGroup,
   ListGroupItem,
   Table,
-} from "reactstrap";
-import axios from "axios";
+} from 'reactstrap'
+import axios from 'axios'
 import { CircularProgress } from '@material-ui/core'
 
 function reducer(state, action) {
   switch (action.type) {
-    case "FETCH_REQUEST":
-      return { ...state, loading: true, error: "" };
-    case "FETCH_SUCCESS":
-      return { ...state, loading: false, orders: action.payload, error: "" };
-    case "FETCH_FAIL":
-      return { ...state, loading: false, error: action.payload };
+    case 'FETCH_REQUEST':
+      return { ...state, loading: true, error: '' }
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, orders: action.payload, error: '' }
+    case 'FETCH_FAIL':
+      return { ...state, loading: false, error: action.payload }
     default:
-      state;
+      state
   }
 }
 
 function Orders() {
-  const { state } = useContext(Store);
-  const { userInfo } = state;
-  const router = useRouter();
-  const ref = useRef();
+  const { state } = useContext(Store)
+  const { userInfo } = state
+  const router = useRouter()
+  const ref = useRef()
   const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
     loading: true,
     orders: [],
-    error: "",
-  });
+    error: '',
+  })
 
   useEffect(() => {
     if (!userInfo) {
-      router.push("/login");
+      router.push('/login')
     }
     const fetchData = async () => {
       try {
-        dispatch({ type: "FETCH_REQUEST" });
+        dispatch({ type: 'FETCH_REQUEST' })
         const { data } = await axios.get(`/api/admin/orders`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
-        });
-        dispatch({ type: "FETCH_SUCCESS", payload: data });
+        })
+        dispatch({ type: 'FETCH_SUCCESS', payload: data })
       } catch (err) {
-        toast.error(`${getError(err)}`);
-        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
+        toast.error(`${getError(err)}`)
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) })
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   return (
     <>
       <Head>
         <title>Order History</title>
         <meta name="description" content="Your Current Cart" />
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
       </Head>
       <main>
         <ToastContainer />
@@ -75,18 +92,22 @@ function Orders() {
           <Row>
             <Col lg="3" md="6" className="mb-3">
               <ListGroup>
-                <ListGroupItem
-                  action
-                  href="/admin/dashboard"
-                  tag="a"
-                >
+                <ListGroupItem action href="/admin/dashboard" tag="a">
                   Admin Dashboard
                 </ListGroupItem>
-                <ListGroupItem action href="/admin/orders"  className="bg-danger text-light" tag="a">
+                <ListGroupItem
+                  action
+                  href="/admin/orders"
+                  className="bg-warning text-light"
+                  tag="a"
+                >
                   Orders
                 </ListGroupItem>
                 <ListGroupItem action href="/admin/products" tag="a">
                   Products
+                </ListGroupItem>
+                <ListGroupItem action href="/admin/modifiers" tag="a">
+                  Modifiers
                 </ListGroupItem>
                 <ListGroupItem action href="/admin/users" tag="a">
                   Users
@@ -97,9 +118,9 @@ function Orders() {
               <ListGroup>
                 <ListGroupItem>
                   {loading ? (
-                    <CircularProgress/>
+                    <CircularProgress />
                   ) : error ? (
-                    <div className="bg-danger">{error}</div>
+                    <div className="bg-warning">{error}</div>
                   ) : (
                     <Table responsive>
                       <thead>
@@ -114,19 +135,36 @@ function Orders() {
                         </tr>
                       </thead>
                       <tbody>
-                          {
-                              orders.map((order)=>(
-                                  <tr key={order._id}>
-                                  <th scope="row">{order._id.substring(20, 24)}</th>
-                                  <td>{order.user ? order.user.name: 'DELETED USER'}</td>
-                                  <td>{order.createdAt}</td>
-                                  <td>${order.totalPrice}</td>
-                                  <td>{order.isPaid ? `paid at ${order.paidAt}` : 'not paid'}</td>
-                                  <td>{order.isDelivered ? `delivered at ${order.deliveredAt}` : 'not delivered'}</td>
-                                  <td> <Link href={`/order/${order._id}`} passHref legacyBehavior><button className="btn__3">Details</button></Link></td>
-                                </tr>
-                              ))
-                          }
+                        {orders.map((order) => (
+                          <tr key={order._id}>
+                            <th scope="row">{order._id.substring(20, 24)}</th>
+                            <td>
+                              {order.user ? order.user.name : 'DELETED USER'}
+                            </td>
+                            <td>{order.createdAt}</td>
+                            <td>${order.totalPrice}</td>
+                            <td>
+                              {order.isPaid
+                                ? `paid at ${order.paidAt}`
+                                : 'not paid'}
+                            </td>
+                            <td>
+                              {order.isDelivered
+                                ? `delivered at ${order.deliveredAt}`
+                                : 'not delivered'}
+                            </td>
+                            <td>
+                              {' '}
+                              <Link
+                                href={`/order/${order._id}`}
+                                passHref
+                                legacyBehavior
+                              >
+                                <button className="btn__3">Details</button>
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </Table>
                   )}
@@ -137,7 +175,7 @@ function Orders() {
         </Container>
       </main>
     </>
-  );
+  )
 }
 
-export default dynamic(() => Promise.resolve(Orders), { ssr: false });
+export default dynamic(() => Promise.resolve(Orders), { ssr: false })

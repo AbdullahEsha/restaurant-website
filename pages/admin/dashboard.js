@@ -1,71 +1,82 @@
-import React, { useContext, useEffect, useReducer, useRef } from "react";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import 'chart.js/auto';
-import { Bar } from "react-chartjs-2";
-import { Store } from "../../helpers/Store";
-import { useRouter } from "next/router";
-import { getError } from "../../helpers/error";
-import { ToastContainer, toast } from "react-toastify";
-import {
-  Container,
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
-} from "reactstrap";
-import axios from "axios";
+import React, { useContext, useEffect, useReducer, useRef } from 'react'
+import dynamic from 'next/dynamic'
+import Head from 'next/head'
+import 'chart.js/auto'
+import { Bar } from 'react-chartjs-2'
+import { Store } from '../../helpers/Store'
+import { useRouter } from 'next/router'
+import { getError } from '../../helpers/error'
+import { ToastContainer, toast } from 'react-toastify'
+import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap'
+import axios from 'axios'
 import { CircularProgress } from '@material-ui/core'
 
 function reducer(state, action) {
   switch (action.type) {
-    case "FETCH_REQUEST":
-      return { ...state, loading: true, error: "" };
-    case "FETCH_SUCCESS":
-      return { ...state, loading: false, summary: action.payload, error: "" };
-    case "FETCH_FAIL":
-      return { ...state, loading: false, error: action.payload };
+    case 'FETCH_REQUEST':
+      return { ...state, loading: true, error: '' }
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, summary: action.payload, error: '' }
+    case 'FETCH_FAIL':
+      return { ...state, loading: false, error: action.payload }
     default:
-      state;
+      state
   }
 }
 
 function AdminDashboard() {
-  const { state } = useContext(Store);
-  const { userInfo } = state;
-  const router = useRouter();
-  const ref = useRef();
+  const { state } = useContext(Store)
+  const { userInfo } = state
+  const router = useRouter()
+  const ref = useRef()
   const [{ loading, error, summary }, dispatch] = useReducer(reducer, {
     loading: true,
     summary: { salesData: [] },
-    error: "",
-  });
+    error: '',
+  })
 
   useEffect(() => {
     if (!userInfo) {
-      router.push("/login");
+      router.push('/login')
     }
     const fetchData = async () => {
       try {
-        dispatch({ type: "FETCH_REQUEST" });
+        dispatch({ type: 'FETCH_REQUEST' })
         const { data } = await axios.get(`/api/admin/summary`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
-        });
-        dispatch({ type: "FETCH_SUCCESS", payload: data });
+        })
+        dispatch({ type: 'FETCH_SUCCESS', payload: data })
       } catch (err) {
-        toast.error(`${getError(err)}`);
-        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
+        toast.error(`${getError(err)}`)
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) })
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   return (
     <>
       <Head>
         <title>Admin Dashboard</title>
         <meta name="description" content="Your Current Cart" />
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
       </Head>
       <main>
         <ToastContainer />
@@ -76,7 +87,7 @@ function AdminDashboard() {
               <ListGroup>
                 <ListGroupItem
                   action
-                  className="bg-danger text-light "
+                  className="bg-warning text-light "
                   href="/admin/dashboard"
                   tag="a"
                 >
@@ -88,6 +99,9 @@ function AdminDashboard() {
                 <ListGroupItem action href="/admin/products" tag="a">
                   Products
                 </ListGroupItem>
+                <ListGroupItem action href="/admin/modifiers" tag="a">
+                  Modifiers
+                </ListGroupItem>
                 <ListGroupItem action href="/admin/users" tag="a">
                   Users
                 </ListGroupItem>
@@ -97,9 +111,9 @@ function AdminDashboard() {
               <ListGroup>
                 <ListGroupItem>
                   {loading ? (
-                    <CircularProgress/>
+                    <CircularProgress />
                   ) : error ? (
-                    <div className="bg-danger">{error}</div>
+                    <div className="bg-warning">{error}</div>
                   ) : (
                     <>
                       <section>
@@ -132,17 +146,17 @@ function AdminDashboard() {
                               labels: summary.salesData.map((x) => x._id),
                               datasets: [
                                 {
-                                  label: "Sales",
-                                  backgroundColor: "#fde4e4",
+                                  label: 'Sales',
+                                  backgroundColor: '#fde4e4',
                                   data: summary.salesData.map(
-                                    (x) => x.totalSales
+                                    (x) => x.totalSales,
                                   ),
                                 },
                               ],
                             }}
                             ref={ref}
                             options={{
-                              legend: { display: true, position: "right" },
+                              legend: { display: true, position: 'right' },
                             }}
                           />
                         </Row>
@@ -156,7 +170,7 @@ function AdminDashboard() {
         </Container>
       </main>
     </>
-  );
+  )
 }
 
-export default dynamic(() => Promise.resolve(AdminDashboard), { ssr: false });
+export default dynamic(() => Promise.resolve(AdminDashboard), { ssr: false })

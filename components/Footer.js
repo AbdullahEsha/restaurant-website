@@ -1,29 +1,29 @@
-import React from 'react'
-import { Container, Col, Row, ListGroup, ListGroupItem } from 'reactstrap'
-import { toast } from 'react-toastify'
-import Link from 'next/link'
-import { useForm } from 'react-hook-form'
-import axios from 'axios'
-import Image from 'next/image'
+import React from "react";
+import { Container, Col, Row, ListGroup, ListGroupItem } from "reactstrap";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import Image from "next/image";
 
 function Footer(props) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
+  } = useForm();
 
   const submitHandler = async ({ email }) => {
     try {
-      console.log(email)
-      const { data } = await axios.post('/api/newsletter', {
+      console.log(email);
+      const { data } = await axios.post("/api/newsletter", {
         email,
-      })
-      toast.success('Successfully Subcribed')
+      });
+      toast.success("Successfully Subcribed");
     } catch (err) {
-      toast.error(`Something went wrong!`)
+      toast.error(`Something went wrong!`);
     }
-  }
+  };
 
   return (
     <footer className="footer">
@@ -31,15 +31,13 @@ function Footer(props) {
         <Row>
           <Col lg="3" md="4" sm="6">
             <div className="footer__logo text-start ">
-              <span className="logo__text mb-3">
-                <Image
-                  src="/images/halal-kabab-logo.svg"
-                  alt="halal-kabab-logo"
-                  height={300}
-                  width={300}
-                  className="halal-kabab-footer-logo"
-                />
-              </span>
+              <Image
+                src="/images/halal-kabab-logo.svg"
+                alt="halal-kabab-logo"
+                height={300}
+                width={300}
+                className="halal-kabab-footer-logo"
+              />
               <div>
                 Lorem ipsum dolor sit amet, consectetur adipiscingmv dmsfdgg
                 mssdg
@@ -47,7 +45,7 @@ function Footer(props) {
             </div>
           </Col>
 
-          <Col lg="3" md="4" sm="6">
+          <Col lg="2" md="4" sm="6">
             <h5 className="footer__title">Delivery Time</h5>
             <ListGroup>
               <ListGroupItem className="delivery__time-item border-0 ps-0">
@@ -61,11 +59,11 @@ function Footer(props) {
             </ListGroup>
           </Col>
 
-          <Col lg="3" md="4" sm="6">
+          <Col lg="4" md="4" sm="6">
             <h5 className="footer__title">Contact</h5>
             <ListGroup className="delivery__time--list">
               <ListGroupItem className="delivery__time-item border-0 ps-0">
-                <p> Location: 7233 Marshall rd upper Darby pa 19082</p>
+                <span> Location: 7233 Marshall rd upper Darby pa 19082</span>
               </ListGroupItem>
               <ListGroupItem className="delivery__time-item border-0 ps-0">
                 <span>Phone: 6107135841</span>
@@ -82,11 +80,12 @@ function Footer(props) {
             <form className="newsletter" onSubmit={handleSubmit(submitHandler)}>
               <input
                 type="email"
-                {...register('email', {
-                  required: 'Please enter email',
+                {...register("email", {
+                  required: "Please enter email",
                   pattern: {
-                    value: /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-                    message: 'Please enter  a valid email address',
+                    value:
+                      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+                    message: "Please enter  a valid email address",
                   },
                 })}
                 placeholder="Enter your email"
@@ -110,15 +109,15 @@ function Footer(props) {
             </p>
           </Col>
           <Col lg="6" md="6">
-            <div className="social__links d-flex align-items-center gap-4 justify-content-end">
+            <div className="social__links d-flex align-items-center gap-4">
               <p className="m-0">Follow: </p>
               <span>
-                {' '}
+                {" "}
                 <Link href="https://www.facebook.com/" legacyBehavior>
                   <a>
                     <i className="ri-facebook-line"></i>
                   </a>
-                </Link>{' '}
+                </Link>{" "}
               </span>
 
               <span>
@@ -130,28 +129,28 @@ function Footer(props) {
               </span>
 
               <span>
-                {' '}
+                {" "}
                 <Link href="https://youtube.com/" legacyBehavior>
                   <a>
                     <i className="ri-youtube-line"></i>
                   </a>
-                </Link>{' '}
+                </Link>{" "}
               </span>
 
               <span>
-                {' '}
+                {" "}
                 <Link href="https://linkedin.com/" legacyBehavior>
                   <a>
                     <i className="ri-linkedin-line"></i>
                   </a>
-                </Link>{' '}
+                </Link>{" "}
               </span>
             </div>
           </Col>
         </Row>
       </Container>
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

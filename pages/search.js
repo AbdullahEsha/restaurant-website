@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { toast, ToastContainer } from "react-toastify";
-import { Container, Row, Col } from "reactstrap";
-import axios from "axios";
+import React, { useContext, useState } from 'react'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { toast, ToastContainer } from 'react-toastify'
+import { Container, Row, Col } from 'reactstrap'
+import axios from 'axios'
 import {
   Box,
   Button,
@@ -15,44 +15,45 @@ import {
   Typography,
   InputBase,
   IconButton,
-} from "@material-ui/core";
-import db from "../helpers/db";
-import Product from "../models/Product";
-import { Store } from "../helpers/Store";
-import ProductCard from "../components/UI/ProductCard";
-import Rating from "@material-ui/lab/Rating";
-import { Pagination } from "@material-ui/lab";
+} from '@material-ui/core'
+import db from '../helpers/db'
+import Product from '../models/Product'
+import { Store } from '../helpers/Store'
+import ProductCard from '../components/UI/ProductCard'
+import Rating from '@material-ui/lab/Rating'
+import { Pagination } from '@material-ui/lab'
+import CommonSection from '../components/UI/CommonSection'
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 6
 
 const prices = [
   {
-    name: "$1 to $50",
-    value: "1-50",
+    name: '$1 to $50',
+    value: '1-50',
   },
   {
-    name: "$51 to $200",
-    value: "51-200",
+    name: '$51 to $200',
+    value: '51-200',
   },
   {
-    name: "$201 to $1000",
-    value: "201-1000",
+    name: '$201 to $1000',
+    value: '201-1000',
   },
-];
+]
 
-const ratings = [1, 2, 3, 4, 5];
+const ratings = [1, 2, 3, 4, 5]
 
 export default function search(props) {
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
   const {
-    query = "all",
-    category = "all",
-    price = "all",
-    rating = "all",
-    sort = "featured",
-  } = router.query;
-  const { products, countProducts, categories, pages } = props;
+    query = 'all',
+    category = 'all',
+    price = 'all',
+    rating = 'all',
+    sort = 'featured',
+  } = router.query
+  const { products, countProducts, categories, pages } = props
   const filterSearch = ({
     page,
     category,
@@ -63,63 +64,63 @@ export default function search(props) {
     price,
     rating,
   }) => {
-    const path = router.pathname;
-    const { query } = router;
-    if (page) query.page = page;
-    if (searchQuery) query.searchQuery = searchQuery;
-    if (sort) query.sort = sort;
-    if (category) query.category = category;
-    if (price) query.price = price;
-    if (rating) query.rating = rating;
-    if (min) query.min ? query.min : query.min === 0 ? 0 : min;
-    if (max) query.max ? query.max : query.max === 0 ? 0 : max;
+    const path = router.pathname
+    const { query } = router
+    if (page) query.page = page
+    if (searchQuery) query.searchQuery = searchQuery
+    if (sort) query.sort = sort
+    if (category) query.category = category
+    if (price) query.price = price
+    if (rating) query.rating = rating
+    if (min) query.min ? query.min : query.min === 0 ? 0 : min
+    if (max) query.max ? query.max : query.max === 0 ? 0 : max
 
     router.push({
       pathname: path,
       query: query,
-    });
-  };
+    })
+  }
   const categoryHandler = (e) => {
-    filterSearch({ category: e.target.value });
-  };
+    filterSearch({ category: e.target.value })
+  }
 
   const pageHandler = (e, page) => {
-    filterSearch({ page });
-  };
+    filterSearch({ page })
+  }
 
   const sortHandler = (e) => {
-    filterSearch({ sort: e.target.value });
-  };
+    filterSearch({ sort: e.target.value })
+  }
   const priceHandler = (e) => {
-    filterSearch({ price: e.target.value });
-  };
+    filterSearch({ price: e.target.value })
+  }
   const ratingHandler = (e) => {
-    filterSearch({ rating: e.target.value });
-  };
+    filterSearch({ rating: e.target.value })
+  }
 
   const queryChangeHandler = (e) => {
-    setSearchQuery(e.target.value);
-  };
+    setSearchQuery(e.target.value)
+  }
   const submitHandler = (e) => {
-    e.preventDefault();
-    router.push(`/search?query=${searchQuery}`);
-  };
+    e.preventDefault()
+    router.push(`/search?query=${searchQuery}`)
+  }
 
-  const { state, dispatch } = useContext(Store);
+  const { state, dispatch } = useContext(Store)
 
   const addToCartHandler = async (product) => {
-    const existItem = state.cart.cartItems.find((x) => x._id === product._id);
-    const quantity = existItem ? existItem.quantity + 1 : 1;
-    const { data } = await axios.get(`/api/products/${product._id}`);
+    const existItem = state.cart.cartItems.find((x) => x._id === product._id)
+    const quantity = existItem ? existItem.quantity + 1 : 1
+    const { data } = await axios.get(`/api/products/${product._id}`)
 
     if (data.countInStock <= quantity) {
-      toast.error("Sorry we cannot provide this quantity of food!");
-      return;
+      toast.error('Sorry we cannot provide this quantity of food!')
+      return
     }
-    dispatch({ type: "CART_ADD_ITEM", payload: { ...product, quantity } });
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } })
 
-    router.push("/cart");
-  };
+    router.push('/cart')
+  }
 
   return (
     <>
@@ -131,7 +132,7 @@ export default function search(props) {
           name="description"
           content="We deliver your takeouts or essential groceries from the best-rated local partners straight to your door. Download our app or order online. Food. We Get It."
         />
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -153,6 +154,7 @@ export default function search(props) {
       </Head>
       <main>
         <ToastContainer />
+        <CommonSection title="Search Items" />
         <section>
           <Container>
             <Grid container spacing={1}>
@@ -219,7 +221,7 @@ export default function search(props) {
                           <MenuItem dispaly="flex" key={rating} value={rating}>
                             <Rating
                               value={rating}
-                              style={{ color: "#df2020" }}
+                              style={{ color: '#df2020' }}
                               readOnly
                             />
                             <Typography component="span">&amp; Up</Typography>
@@ -233,16 +235,16 @@ export default function search(props) {
               <Grid item md={9}>
                 <Grid container className="d-flex justify-content-between">
                   <Grid item>
-                    {products.length === 0 ? "No" : countProducts} Results
-                    {query !== "all" && query !== "" && " : " + query}
-                    {category !== "all" && " : " + category}
-                    {price !== "all" && " : Price " + price}
-                    {rating !== "all" && " : Rating " + rating + " & up"}
-                    {(query !== "all" && query !== "") ||
-                    category !== "all" ||
-                    rating !== "all" ||
-                    price !== "all" ? (
-                      <Button onClick={() => router.push("/search")}>
+                    {products.length === 0 ? 'No' : countProducts} Results
+                    {query !== 'all' && query !== '' && ' : ' + query}
+                    {category !== 'all' && ' : ' + category}
+                    {price !== 'all' && ' : Price ' + price}
+                    {rating !== 'all' && ' : Rating ' + rating + ' & up'}
+                    {(query !== 'all' && query !== '') ||
+                    category !== 'all' ||
+                    rating !== 'all' ||
+                    price !== 'all' ? (
+                      <Button onClick={() => router.push('/search')}>
                         <i className="ri-close-line"></i>
                       </Button>
                     ) : null}
@@ -250,7 +252,7 @@ export default function search(props) {
 
                   <Grid item>
                     <Typography component="span" className="filter__sort">
-                      Sort by {"   "}
+                      Sort by {'   '}
                     </Typography>
                     <Select value={sort} onChange={sortHandler}>
                       <MenuItem value="featured">Featured</MenuItem>
@@ -262,24 +264,19 @@ export default function search(props) {
                   </Grid>
                 </Grid>
 
-                <Grid
-                  container
-                  className="mt-1 d-flex justify-content-center"
-                  spacing={3}
-                >
-                  {products.map((item) => (
-                    <Grid item md={4} key={item.name}>
-                      <ProductCard
-                        item={item}
-                        click={() => addToCartHandler(item)}
-                      />
-                    </Grid>
+                <div className="product-card-grid-search mt-3">
+                  {products.map((item, index) => (
+                    <ProductCard
+                      item={item}
+                      key={index}
+                      click={() => addToCartHandler(item)}
+                    />
                   ))}
-                </Grid>
+                </div>
 
                 <Pagination
                   className="mt-3"
-                  defaultPage={parseInt(query.page || "1")}
+                  defaultPage={parseInt(query.page || '1')}
                   count={pages}
                   onChange={pageHandler}
                 ></Pagination>
@@ -289,61 +286,61 @@ export default function search(props) {
         </section>
       </main>
     </>
-  );
+  )
 }
 
 export async function getServerSideProps({ query }) {
-  await db.connect();
-  const pageSize = query.pageSize || PAGE_SIZE;
-  const page = query.page || 1;
-  const category = query.category || "";
-  const price = query.price || "";
-  const rating = query.rating || "";
-  const sort = query.sort || "";
-  const searchQuery = query.query || "";
+  await db.connect()
+  const pageSize = query.pageSize || PAGE_SIZE
+  const page = query.page || 1
+  const category = query.category || ''
+  const price = query.price || ''
+  const rating = query.rating || ''
+  const sort = query.sort || ''
+  const searchQuery = query.query || ''
   const queryFilter =
-    searchQuery && searchQuery !== "all"
+    searchQuery && searchQuery !== 'all'
       ? {
           name: {
             $regex: searchQuery,
-            $options: "i",
+            $options: 'i',
           },
         }
-      : {};
+      : {}
 
-  const categoryFilter = category && category !== "all" ? { category } : {};
+  const categoryFilter = category && category !== 'all' ? { category } : {}
   const ratingFilter =
-    rating && rating !== "all"
+    rating && rating !== 'all'
       ? {
           rating: {
             $gte: Number(rating),
           },
         }
-      : {};
+      : {}
   // 10-50
   const priceFilter =
-    price && price !== "all"
+    price && price !== 'all'
       ? {
           price: {
-            $gte: Number(price.split("-")[0]),
-            $lte: Number(price.split("-")[1]),
+            $gte: Number(price.split('-')[0]),
+            $lte: Number(price.split('-')[1]),
           },
         }
-      : {};
+      : {}
   const order =
-    sort === "featured"
+    sort === 'featured'
       ? { featured: -1 }
-      : sort === "lowest"
+      : sort === 'lowest'
       ? { price: 1 }
-      : sort === "highest"
+      : sort === 'highest'
       ? { price: -1 }
-      : sort === "toprated"
+      : sort === 'toprated'
       ? { rating: -1 }
-      : sort === "newest"
+      : sort === 'newest'
       ? { createdAt: -1 }
-      : { _id: -1 };
+      : { _id: -1 }
 
-  const categories = await Product.find().distinct("category");
+  const categories = await Product.find().distinct('category')
   const productDocs = await Product.find(
     {
       ...queryFilter,
@@ -351,22 +348,22 @@ export async function getServerSideProps({ query }) {
       ...priceFilter,
       ...ratingFilter,
     },
-    "-reviews"
+    '-reviews',
   )
     .sort(order)
     .skip(pageSize * (page - 1))
     .limit(pageSize)
-    .lean();
+    .lean()
   const countProducts = await Product.countDocuments({
     ...queryFilter,
     ...categoryFilter,
     ...priceFilter,
     ...ratingFilter,
-  });
+  })
 
-  await db.disconnect();
+  await db.disconnect()
 
-  const products = productDocs.map(db.convertDocToObj);
+  const products = productDocs.map(db.convertDocToObj)
 
   return {
     props: {
@@ -376,5 +373,5 @@ export async function getServerSideProps({ query }) {
       pages: Math.ceil(countProducts / pageSize),
       categories,
     },
-  };
+  }
 }

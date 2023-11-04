@@ -1,14 +1,14 @@
-import React, { useEffect, useContext } from "react";
-import Head from "next/head";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-import { Container, Row, Col } from "reactstrap";
-import CommonSection from "../components/UI/CommonSection";
-import { useForm } from "react-hook-form";
-import Cookies from "js-cookie";
-import { Store } from "../helpers/Store";
-import { toast, ToastContainer } from "react-toastify";
-import CheckWizard from "../components/CheckWizard";
+import React, { useEffect, useContext } from 'react'
+import Head from 'next/head'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import { Container, Row, Col } from 'reactstrap'
+import CommonSection from '../components/UI/CommonSection'
+import { useForm } from 'react-hook-form'
+import Cookies from 'js-cookie'
+import { Store } from '../helpers/Store'
+import { toast, ToastContainer } from 'react-toastify'
+import CheckWizard from '../components/CheckWizard'
 function checkout() {
   const {
     register,
@@ -16,24 +16,24 @@ function checkout() {
     formState: { errors },
     setValue,
     getValues,
-  } = useForm();
-  const router = useRouter();
-  const { state, dispatch } = useContext(Store);
+  } = useForm()
+  const router = useRouter()
+  const { state, dispatch } = useContext(Store)
   const {
     userInfo,
     cart: { shippingAddress },
-  } = state;
-  const { location } = shippingAddress;
+  } = state
+  const { location } = shippingAddress
   useEffect(() => {
     if (!userInfo) {
-      router.push("/login?redirect=/shipping");
+      router.push('/login?redirect=/shipping')
     }
-    setValue("fullName", shippingAddress.fullName);
-    setValue("address", shippingAddress.address);
-    setValue("city", shippingAddress.city);
-    setValue("postalCode", shippingAddress.postalCode);
-    setValue("country", shippingAddress.country);
-  }, []);
+    setValue('fullName', shippingAddress.fullName)
+    setValue('address', shippingAddress.address)
+    setValue('city', shippingAddress.city)
+    setValue('postalCode', shippingAddress.postalCode)
+    setValue('country', shippingAddress.country)
+  }, [])
 
   const submitHandler = async ({
     fullName,
@@ -43,46 +43,46 @@ function checkout() {
     country,
   }) => {
     dispatch({
-      type: "SAVE_SHIPPING_ADDRESS",
+      type: 'SAVE_SHIPPING_ADDRESS',
       payload: { fullName, address, city, postalCode, country, location },
-    });
-    Cookies.set("shippingAddress", {
+    })
+    Cookies.set('shippingAddress', {
       fullName,
       address,
       city,
       postalCode,
       country,
       location,
-    });
-    router.push("/payment");
-    toast.success("Successfully Register");
-  };
+    })
+    router.push('/payment')
+    toast.success('Successfully Register')
+  }
 
   const chooseLocationHandler = (e) => {
-    const fullName = getValues("fullName");
-    const address = getValues("address");
-    const city = getValues("city");
-    const postalCode = getValues("postalCode");
-    const country = getValues("country");
+    const fullName = getValues('fullName')
+    const address = getValues('address')
+    const city = getValues('city')
+    const postalCode = getValues('postalCode')
+    const country = getValues('country')
 
     dispatch({
-      type: "SAVE_SHIPPING_LOCATION",
+      type: 'SAVE_SHIPPING_LOCATION',
       payload: { fullName, address, city, postalCode, country },
-    });
+    })
 
     Cookies.set(
-      "shippingAddress",
+      'shippingAddress',
       JSON.stringify({
         fullName,
         address,
         city,
         postalCode,
         country,
-      })
-    );
+      }),
+    )
 
-    router.push("/map");
-  };
+    router.push('/map')
+  }
   return (
     <>
       <Head>
@@ -93,7 +93,7 @@ function checkout() {
           name="description"
           content="We deliver your takeouts from the best-rated local partners straight to your door. Food you Get It."
         />
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -130,11 +130,11 @@ function checkout() {
                   <div className="form__group">
                     <input
                       type="text"
-                      {...register("fullName", {
-                        required: "Please enter your full name",
+                      {...register('fullName', {
+                        required: 'Please enter your full name',
                         minLength: {
                           value: 4,
-                          message: "Full Name is more than 3",
+                          message: 'Full Name is more than 3',
                         },
                       })}
                       placeholder="Enter your full name"
@@ -151,11 +151,11 @@ function checkout() {
                   <div className="form__group">
                     <input
                       type="text"
-                      {...register("address", {
-                        required: "Please enter your full address",
+                      {...register('address', {
+                        required: 'Please enter your full address',
                         minLength: {
                           value: 4,
-                          message: "Full address is more than 3",
+                          message: 'Full address is more than 3',
                         },
                       })}
                       placeholder="Enter your full address"
@@ -170,9 +170,9 @@ function checkout() {
                   <div className="form__group">
                     <input
                       type="text"
-                      {...register("city", {
-                        required: "Please enter your city",
-                        minLength: { value: 4, message: "City is more than 3" },
+                      {...register('city', {
+                        required: 'Please enter your city',
+                        minLength: { value: 4, message: 'City is more than 3' },
                       })}
                       placeholder="City"
                       required
@@ -184,8 +184,8 @@ function checkout() {
                   <div className="form__group">
                     <input
                       type="number"
-                      {...register("postalCode", {
-                        required: "Please enter your postal code",
+                      {...register('postalCode', {
+                        required: 'Please enter your postal code',
                       })}
                       placeholder="Postal Code"
                       required
@@ -199,9 +199,9 @@ function checkout() {
                   <div className="form__group">
                     <input
                       type="text"
-                      {...register("country", {
-                        required: "Please enter your city",
-                        minLength: { value: 3, message: "City is more than 2" },
+                      {...register('country', {
+                        required: 'Please enter your city',
+                        minLength: { value: 3, message: 'City is more than 2' },
                       })}
                       placeholder="Country"
                       required
@@ -234,7 +234,7 @@ function checkout() {
         </section>
       </main>
     </>
-  );
+  )
 }
 
-export default dynamic(() => Promise.resolve(checkout), { ssr: false });
+export default dynamic(() => Promise.resolve(checkout), { ssr: false })

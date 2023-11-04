@@ -19,7 +19,7 @@ import {
   IconButton,
   ListItemText,
 } from "@material-ui/core";
-import { Dropdown, Space, Menu } from "antd";
+import { Dropdown, Space } from "antd";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { getError } from "../helpers/error";
@@ -31,8 +31,8 @@ const nav__links = [
     path: "/",
   },
   {
-    display: "Foods",
-    path: "/shop",
+    display: "Menu",
+    path: "/menu",
   },
   {
     display: "Search",
@@ -78,7 +78,7 @@ const items = [
   },
 ];
 
-function Header(props) {
+function Header() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const [user, setUser] = useState("");
@@ -118,7 +118,7 @@ function Header(props) {
     ) {
       headerRef.current.classList.add("header__shrink");
     } else {
-      headerRef.current.classList.remove("header__shrink");
+      headerRef?.current?.classList?.remove("header__shrink");
     }
   };
 
@@ -136,6 +136,7 @@ function Header(props) {
       window.removeEventListener("scroll", headerFunc);
     };
   }, []);
+
   return (
     <header className="header" ref={headerRef}>
       <ToastContainer />
@@ -143,18 +144,20 @@ function Header(props) {
         <div className="nav__wrapper d-flex align-items-center justify-content-between">
           <div className="logo">
             <div className="d-flex align-items-center justify-content-between">
-              <span className="menu__btn" onClick={sidebarOpenHandler}>
+              {/* <span className="menu__btn" onClick={sidebarOpenHandler}>
                 <i className="ri-menu-line"></i>
-              </span>
-              <span className="logo__text">
-                <Image
-                  src="/images/halal-kabab-logo.svg"
-                  alt="halal-kabab-logo"
-                  className="halal-logo"
-                  height={300}
-                  width={300}
-                />
-              </span>
+              </span> */}
+              <Image
+                src="/images/halal-kabab-logo.svg"
+                alt="halal-kabab-logo"
+                className="halal-logo"
+                height={300}
+                width={300}
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  router.push("/");
+                }}
+              />
             </div>
           </div>
 
@@ -208,11 +211,9 @@ function Header(props) {
               {nav__links.map((item, index) => (
                 <Link href={item.path} key={index} legacyBehavior>
                   <a
-                    className={(navClass) =>
-                      navClass.isActive
-                        ? "active__menu text-decoration-none"
-                        : "text-decoration-none"
-                    }
+                    className={`${
+                      router.pathname === item.path && "active__menu"
+                    }`}
                   >
                     {item.display}
                   </a>
@@ -260,7 +261,6 @@ function Header(props) {
                 </a>
               </span>
             )}
-
             <span className="mobile__menu" onClick={toggleMenu}>
               <i className="ri-menu-line"></i>
             </span>

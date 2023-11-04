@@ -1,8 +1,11 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
 ## OVERVIEW
-Delivera is a complete food delivery solution that has all the necessary features working right out of the box to make your on-demand food delivery startup.
-If you own a restaurant, café or food service business, Deliverv is a must-have web application. Designed to make ordering menu items seamless and hassle-free, Delivera is the simplest way for your business to display food items and for your customers to order.
-Delivera is well documented, very easy to use, Easily Customized, loads faster and provides better performance.
+
+Halal Kabab & Curry is a complete food delivery solution that has all the necessary features working right out of the box to make your on-demand food delivery startup.
+If you own a restaurant, café or food service business, Deliverv is a must-have web application. Designed to make ordering menu items seamless and hassle-free, Halal Kabab & Curry is the simplest way for your business to display food items and for your customers to order.
+Halal Kabab & Curry is well documented, very easy to use, Easily Customized, loads faster and provides better performance.
+
 ## Getting Started
 
 First, run the development server:

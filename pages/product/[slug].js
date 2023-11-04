@@ -2,280 +2,318 @@ import React, { useContext, useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import axios from 'axios';
+import axios from "axios";
 import CommonSection from "../../components/UI/CommonSection";
 import { Container, Row, Col } from "reactstrap";
 import Loader from "../../components/Loader";
 import db from "../../helpers/db";
 import Product from "../../models/Product";
-import ProductCard from '../../components/UI/ProductCard';
+import ProductCard from "../../components/UI/ProductCard";
 import { Store } from "../../helpers/Store";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
-import Rating from '@material-ui/lab/Rating';
-import { getError } from '../../helpers/error';
+import Rating from "@material-ui/lab/Rating";
+import { getError } from "../../helpers/error";
 
 export default function ProductScreen(props) {
-    const router=useRouter();
-    const { product, products } = props;
-    const {state, dispatch} = useContext(Store);
-    const { userInfo } = state;
-    const [reviews,setReviews] = useState([]);
-    const [rating, setRating] = useState(0);
-    const [comment, setComment] = useState('');
-    const [loading, setLoading] = useState(false);
-    const src = `${product.image}`;
-    const src2 = `${product.image01}`;
-    const src3 = `${product.image02}`;
-    const [previewImg, setPreviewImg] = useState(src);
-    if (!product) {
-        <div>Product Not Found</div>
+  const router = useRouter();
+  const { product, products } = props;
+  const { state, dispatch } = useContext(Store);
+  const { userInfo } = state;
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const src = `${product.image}`;
+  const src2 = `${product.image01}`;
+  const src3 = `${product.image02}`;
+  const [previewImg, setPreviewImg] = useState(src);
+  if (!product) {
+    <div>Product Not Found</div>;
+  }
+  const [tab, setTab] = useState("desc");
+  const [food, setFood] = useState("");
+  const [enteredName, setEnteredName] = useState("");
+  const [enteredEmail, setEnteredEmail] = useState("");
+  const [reviewMsg, setReviewMsg] = useState("");
+  const relatedProduct = products.filter(
+    (item) => product.category === item.category
+  );
+
+  console.log("Food fromaxios get", food);
+
+  const addToCartHandler = async () => {
+    const existItem = state.cart.cartItems.find((x) => x._id === product._id);
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+    const { data } = await axios.get(`/api/products/${product._id}`);
+
+    if (data.countInStock <= quantity) {
+      toast.error("Sorry we cannot provide this quantity of food!");
+      return;
     }
-    const [tab, setTab] = useState("desc");
-    const [food, setFood] = useState("");
-    const [enteredName, setEnteredName] = useState("");
-    const [enteredEmail, setEnteredEmail] = useState("");
-    const [reviewMsg, setReviewMsg] = useState("");
-    const relatedProduct = products.filter((item) => product.category === item.category);
+    dispatch({ type: "CART_ADD_ITEM", payload: { ...product, quantity } });
+    router.push("/cart");
+  };
 
-
-    console.log("Food fromaxios get", food);
-
-    const addToCartHandler= async ()=>{
-        const existItem = state.cart.cartItems.find(x=>x._id === product._id);
-        const quantity= existItem ? existItem.quantity + 1: 1;
-        const { data } = await axios.get(`/api/products/${product._id}`);
-
-        if(data.countInStock <= quantity){
-            toast.error('Sorry we cannot provide this quantity of food!');
-            return;
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await axios.post(
+        `/api/products/${product._id}/reviews`,
+        {
+          rating,
+          comment,
+        },
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
         }
-        dispatch({ type: 'CART_ADD_ITEM', payload: {...product, quantity}});
-        router.push('/cart');
+      );
+      setLoading(false);
+      toast.success("Review submitted successfully");
+      fetchReviews();
+    } catch (err) {
+      setLoading(false);
+      toast.error(`${getError(err)}`);
     }
+  };
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-          await axios.post(
-            `/api/products/${product._id}/reviews`,
-            {
-              rating,
-              comment,
-            },
-            {
-              headers: { authorization: `Bearer ${userInfo.token}` },
-            }
-          );
-          setLoading(false);
-          toast.success('Review submitted successfully');
-          fetchReviews();
-        } catch (err) {
-          setLoading(false);
-          toast.error(`${getError(err)}`);
-        }
-    };
+  const fetchReviews = async () => {
+    try {
+      const { data } = await axios.get(`/api/products/${product._id}/reviews`);
+      setReviews(data);
+    } catch (err) {
+      toast.error(`${getError(err)}`);
+    }
+  };
 
-    const fetchReviews = async () => {
-        try {
-          const { data } = await axios.get(`/api/products/${product._id}/reviews`);
-          setReviews(data);
-        } catch (err) {
-            toast.error(`${getError(err)}`)
-        }
-      };
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
-    useEffect(() => {
-        fetchReviews();
-    }, []);
-
-    return (
+  return (
+    <>
+      <Head>
+        <title>Create Next App</title>
+        <meta name="description" content="Generated by create next app" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+      </Head>
+      <ToastContainer />
+      {!product && product == undefined ? (
+        <Loader />
+      ) : (
         <>
-            <Head>
-                <title>Create Next App</title>
-                <meta name="description" content="Generated by create next app" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <ToastContainer/>
-            {!product && product == undefined ? (
-                <Loader />
-            ) : (
-                <>
-                    <CommonSection title={product.name} />
-                    <section className="mt-5">
-                        <Container>
-                            <Row>
-                                <Col lg="2" md="2">
-                                    <div className="product__images">
-                                        <div
-                                            className="img__item mb-3"
-                                            onClick={() => setPreviewImg(src)}
-                                        >
-                                            <div className="w-50">
-                                                <Image src={src} height={50} width={50} alt="" />
-                                            </div>
-                                        </div>
-                                        <div
-                                            className="img__item mb-3"
-                                            onClick={() => setPreviewImg(src2)}
-                                        >
-                                            <div className="w-50">
-                                                <Image height={50} width={50} src={src2} alt="" />
-                                            </div>
-                                        </div>
+          <CommonSection title={product.name} />
+          <section className="mt-5">
+            <Container>
+              <Row>
+                <Col lg="2" md="2">
+                  <div className="product__images">
+                    <div
+                      className="img__item mb-3"
+                      onClick={() => setPreviewImg(src)}
+                    >
+                      <div className="w-50">
+                        <Image src={src} height={50} width={50} alt="" />
+                      </div>
+                    </div>
+                    <div
+                      className="img__item mb-3"
+                      onClick={() => setPreviewImg(src2)}
+                    >
+                      <div className="w-50">
+                        <Image height={50} width={50} src={src2} alt="" />
+                      </div>
+                    </div>
 
-                                        <div
-                                            className="img__item"
-                                            onClick={() => setPreviewImg(src3)}
-                                        >
-                                            <div className="w-50">
-                                                <Image height={50} width={50} src={src3} alt="" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Col>
+                    <div
+                      className="img__item"
+                      onClick={() => setPreviewImg(src3)}
+                    >
+                      <div className="w-50">
+                        <Image height={50} width={50} src={src3} alt="" />
+                      </div>
+                    </div>
+                  </div>
+                </Col>
 
-                                <Col lg="4" md="4">
-                                    <div className="product__main-img">
-                                        <div className="w-100">
-                                            <Image src={previewImg} height={200} width={200} alt="" />
-                                        </div>
-                                    </div>
-                                </Col>
+                <Col lg="4" md="4">
+                  <div className="product__main-img">
+                    <div className="w-100">
+                      <Image src={previewImg} height={200} width={200} alt="" />
+                    </div>
+                  </div>
+                </Col>
 
-                                <Col lg="6" md="6">
-                                    <div className="single__product-content">
-                                        <h2 className="product__title mb-3">{product.name}</h2>
-                                        <p className="product__price">
-                                            {" "}
-                                            Price: <span>${product.price}</span>
-                                        </p>
-                                        <p className="category mb-2">
-                                            Category: <span>{product.category}</span>
-                                        </p>
-                                        <p className="d-flex align-items-center mt-3 mb-4">
-                                            <Rating value={product.rating}  style={{ color: "#df2020" }} readOnly></Rating>
-                                             <a>({product.numReviews} reviews)</a>
-                                        </p>
+                <Col lg="6" md="6">
+                  <div className="single__product-content">
+                    <h2 className="product__title mb-3">{product.name}</h2>
+                    <p className="product__price">
+                      {" "}
+                      Price: <span>${product.price}</span>
+                    </p>
+                    <p className="category mb-2">
+                      Category: <span>{product.category}</span>
+                    </p>
+                    <p className="d-flex align-items-center mt-3 mb-4">
+                      <Rating
+                        value={product.rating}
+                        style={{ color: "#df2020" }}
+                        readOnly
+                      ></Rating>
+                      <a>({product.numReviews} reviews)</a>
+                    </p>
 
-                                        { /* onClick={addItem} */}
-                                        <button className="addTOCart__btn" onClick={addToCartHandler}>
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                </Col>
+                    {/* onClick={addItem} */}
+                    <button
+                      className="addTOCart__btn"
+                      onClick={addToCartHandler}
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </Col>
 
-                                <Col lg="12">
-                                    <div className="tabs d-flex align-items-center gap-5 py-3">
-                                        <h6
-                                            className={` ${tab === "desc" ? "tab__active" : ""}`}
-                                            onClick={() => setTab("desc")}
-                                        >
-                                            Description
-                                        </h6>
-                                        <h6
-                                            className={` ${tab === "rev" ? "tab__active" : ""}`}
-                                            onClick={() => setTab("rev")}
-                                        >
-                                            Review
-                                        </h6>
-                                    </div>
+                <Col lg="12">
+                  <div className="tabs d-flex align-items-center gap-5 py-3">
+                    <h6
+                      className={` ${tab === "desc" ? "tab__active" : ""}`}
+                      onClick={() => setTab("desc")}
+                    >
+                      Description
+                    </h6>
+                    <h6
+                      className={` ${tab === "rev" ? "tab__active" : ""}`}
+                      onClick={() => setTab("rev")}
+                    >
+                      Review
+                    </h6>
+                  </div>
 
-                                    {tab === "desc" ? (
-                                        <div className="tab__content">
-                                            <p>{product.description}</p>
-                                        </div>
-                                    ) : (
-                                        <div className="tab__form mb-3">
-                                            {reviews.length === 0 && <div className="mt-3">No reviews</div>}
-                                            {reviews.map((review)=>(
-                                                <div key={review._id} className="review pt-5">
-                                                   <p className="user__name mb-2">{review.name}</p>
-                                                   <p className="user__email">{review.createdAt.substring(0, 10)}</p>
-                                                   <Rating value={review.rating}  style={{ color: "#df2020" }} readOnly></Rating>
-                                                   <p className="feedback__text">{review.comment}</p>
-                                               </div>
-                                            ))}
-                                           {
-                                            userInfo ? (
-                                               <>
-                                                
-                                                <form className="form" onSubmit={submitHandler}>
-                                                <h6>Please leave you reviews</h6>
-                                                <div className="form__group">
-                                                    <textarea
-                                                        rows={5}
-                                                        type="text"
-                                                        placeholder="Write your review"
-                                                        value={comment}
-                                                        onChange={(e) => setComment(e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="form__group">
-                                                <Rating name="simple-controlled" value={rating} style={{ color: "#df2020" }} onChange={(e) => setRating(e.target.value)}/>
-                                                </div>
+                  {tab === "desc" ? (
+                    <div className="tab__content">
+                      <p>{product.description}</p>
+                    </div>
+                  ) : (
+                    <div className="tab__form mb-3">
+                      {reviews.length === 0 && (
+                        <div className="mt-3">No reviews</div>
+                      )}
+                      {reviews.map((review) => (
+                        <div key={review._id} className="review pt-5">
+                          <p className="user__name mb-2">{review.name}</p>
+                          <p className="user__email">
+                            {review.createdAt.substring(0, 10)}
+                          </p>
+                          <Rating
+                            value={review.rating}
+                            style={{ color: "#df2020" }}
+                            readOnly
+                          ></Rating>
+                          <p className="feedback__text">{review.comment}</p>
+                        </div>
+                      ))}
+                      {userInfo ? (
+                        <>
+                          <form className="form" onSubmit={submitHandler}>
+                            <h6>Please leave you reviews</h6>
+                            <div className="form__group">
+                              <textarea
+                                rows={5}
+                                type="text"
+                                placeholder="Write your review"
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                required
+                              />
+                            </div>
+                            <div className="form__group">
+                              <Rating
+                                name="simple-controlled"
+                                value={rating}
+                                style={{ color: "#df2020" }}
+                                onChange={(e) => setRating(e.target.value)}
+                              />
+                            </div>
 
-                                                <button type="submit" className="addTOCart__btn">
-                                                    Submit
-                                                </button>
-                                                { loading && <div>Circular Progress </div>}
-                                            </form>
-                                               </>
-                                            ) : (
-                                                <h3>   Please{' '}
-                                                    <Link href={`/login?redirect=/product/${product.slug}`}>
-                                                login
-                                              </Link>{' '}
-                                              to write a review</h3>
-                                            )
-                                           }
-                                          
-                                        </div>
-                                    )}
-                                </Col>
+                            <button type="submit" className="addTOCart__btn">
+                              Submit
+                            </button>
+                            {loading && <div>Circular Progress </div>}
+                          </form>
+                        </>
+                      ) : (
+                        <h3>
+                          {" "}
+                          Please{" "}
+                          <Link
+                            href={`/login?redirect=/product/${product.slug}`}
+                          >
+                            login
+                          </Link>{" "}
+                          to write a review
+                        </h3>
+                      )}
+                    </div>
+                  )}
+                </Col>
 
-                                <Col lg="12" className="mb-5 mt-4">
-                                    <h2 className="related__Product-title">
-                                        You might also like
-                                    </h2>
-                                </Col>
+                <Col lg="12" className="mb-5 mt-4">
+                  <h2 className="related__Product-title">
+                    You might also like
+                  </h2>
+                </Col>
 
-                                {relatedProduct.map((item) => (
-                                    <Col
-                                        lg="3"
-                                        md="4"
-                                        sm="6"
-                                        xs="12"
-                                        className="mb-4"
-                                        key={item.id}
-                                    >
-                                        <ProductCard item={item} />
-                                    </Col>
-                                ))}
-                            </Row>
-                        </Container>
-                    </section>
-                </>
-            )}
+                {relatedProduct.map((item) => (
+                  <Col
+                    lg="3"
+                    md="4"
+                    sm="6"
+                    xs="12"
+                    className="mb-4"
+                    key={item.id}
+                  >
+                    <ProductCard item={item} />
+                  </Col>
+                ))}
+              </Row>
+            </Container>
+          </section>
         </>
-    );
+      )}
+    </>
+  );
 }
 
-
 export async function getServerSideProps(context) {
-    const { params } = context;
-    const { slug } = params;
+  const { params } = context;
+  const { slug } = params;
 
-    await db.connect();
-    const product = await Product.findOne({ slug },'-reviews').lean();
-    const products = await Product.find({},'-reviews').lean();
-    await db.disconnect();
-    return {
-        props: {
-            product: db.convertDocToObj(product),
-            products: products.map(db.convertDocToObj)
-        }
-    }
+  await db.connect();
+  const product = await Product.findOne({ slug }, "-reviews").lean();
+  const products = await Product.find({}, "-reviews").lean();
+  await db.disconnect();
+  return {
+    props: {
+      product: db.convertDocToObj(product),
+      products: products.map(db.convertDocToObj),
+    },
+  };
 }
