@@ -10,6 +10,7 @@ const nextConfig = {
     ], // <== Domain name
   },
   env: {
+    GOOGLE_MAP_API: process.env.GOOGLE_MAP_API,
     MONGODB_URI: process.env.MONGODB_URI,
     JWT_SECRET: process.env.JWT_SECRET,
     ENVIRONMENT: process.env.ENVIRONMENT,
